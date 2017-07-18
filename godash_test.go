@@ -139,7 +139,7 @@ func TestAppendUniq(t *testing.T) {
 
 	// Test correct functionality
 	s2 := []string{"a", "b", "c"}
-	if err := AppendUniq(&s2, "a", "d"); err != nil {
+	if err := AppendUniq(&s2, "a", "d", "a", "d"); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
 	if r := reflect.DeepEqual(s2, []string{"a", "b", "c", "d"}); !r {
