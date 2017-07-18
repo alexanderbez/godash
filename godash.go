@@ -1,8 +1,6 @@
-// Package godash - Provides a collection of handy utility functions.
-//
-// Copyright 2017 Aleksandr Bezobchuk. All rights reserved.
-// Use of this source code is governed by an MIT license that can be found in
-// the LICENSE file.
+// Package godash provides a collection of handy utility functions such as
+// working with slices in a generic fashion and various common encoding
+// shortcuts.
 package godash
 
 import (
@@ -12,38 +10,38 @@ import (
 )
 
 type (
-	// Value reflects any type empty interface
-	// (named collections of method signatures)
+	// Value reflects a placeholder for any type
 	Value interface{}
-	// Slice reflects a slice of any type
+	// Slice reflects a slice or array of any type
 	Slice interface{}
 	// Pointer reflects a pointer that references any type
 	Pointer interface{}
 )
 
-// IsPointer returns true if the supplied argument is a pointer or false
+// IsPointer returns true if the supplied argument is a pointer and false
 // otherwise.
 func IsPointer(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Ptr
 }
 
-// IsFunction returns true if the supplied argument is a function or false
+// IsFunction returns true if the supplied argument is a function and false
 // otherwise.
 func IsFunction(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Func
 }
 
-// IsSlice returns true if the supplied argument is a slice or false otherwise.
+// IsSlice returns true if the supplied argument is a slice or array and false
+// otherwise.
 func IsSlice(value Value) bool {
 	kind := reflect.ValueOf(value).Kind()
 	return kind == reflect.Slice || kind == reflect.Array
 }
 
 // Unique returns a unique collection of elements found in inSlice. The
-// resulting elements are added to a pointer referencing a slice of the same
-// type. If inSlice is not a slice, outPtr not a pointer, or the underlying
-// types differ, an error is returned. Operation runs in O(n) time, where n is
-// the total number of elements in the source slice.
+// resulting elements are added to a slice referenced by a pointer outPtr.
+// If inSlice is not a slice, outPtr not a pointer, or the underlying types
+// differ, an error is returned. Operation runs in O(n) time, where n is the
+// total number of elements in the source slice.
 func Unique(inSlice Slice, outPtr Pointer) error {
 	if !IsSlice(inSlice) {
 		return fmt.Errorf("argument type '%T' is not a slice", inSlice)
@@ -79,8 +77,8 @@ func Unique(inSlice Slice, outPtr Pointer) error {
 }
 
 // SliceEqual determines if the contents of one slice equals the contents of
-// the other. If the either parameter is not a slice or the types do not match,
-// an error is returned. Operation runs in O(n^2) time, where n is the total
+// the other. If either parameter is not a slice or the types do not match, an
+// error is returned. Operation runs in O(n^2) time, where n is the total
 // number of elements found in either slice.
 func SliceEqual(slice1 Slice, slice2 Slice) (bool, error) {
 	if !IsSlice(slice1) {
@@ -200,7 +198,8 @@ func AppendUniq(inPtr Pointer, elements ...Value) error {
 	return nil
 }
 
-// ToPrettyJSON converts a compatible interface to pretty JSON format.
+// ToPrettyJSON converts a compatible interface to pretty JSON format by using
+// four space indentation.
 func ToPrettyJSON(value Value) (r []byte, err error) {
 	r, err = json.MarshalIndent(value, "", "    ")
 	return
