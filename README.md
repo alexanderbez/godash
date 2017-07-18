@@ -1,5 +1,9 @@
 # godash
 
+[![Build Status](https://travis-ci.org/alexanderbez/godash.svg "Travis CI status")](https://travis-ci.org/alexanderbez/godash)
+[![GoDoc](https://godoc.org/github.com/alexanderbez/godash?status.svg)](https://godoc.org/github.com/alexanderbez/godash)
+
+
 A collection of handy utility functions for Golang with no external dependencies!
 Most of the magic is done via Go's `reflect` package. While this does allow you to
 get around having to implement the same functions with different signatures to handle
@@ -44,6 +48,8 @@ pBytes, err := ToPrettyJSON(s)
 bytes, err := ToJSON(s)
 ```
 
+Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API documentation as new functions are implemented.
+
 ## Tests
 
 ```shell
@@ -52,7 +58,12 @@ $ make test
 
 ## Benchmarks
 
-TODO...
+Coming soon...
+
+## TODO:
+
+- Benchmark tests
+- More utility functions
 
 ## Contributing
 
