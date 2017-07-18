@@ -185,7 +185,7 @@ func AppendUniq(inPtr Pointer, elements ...Value) error {
 			return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", currValType, inPtrElemType)
 		}
 
-		contained, err := Includes(inPtrElem.Interface(), currVal)
+		contained, err := Includes(outSlice.Interface(), currVal)
 		if err != nil {
 			return err
 		}
