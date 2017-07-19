@@ -1,6 +1,6 @@
 # godash
 
-[![Build Status](https://travis-ci.org/alexanderbez/godash.svg "Travis CI status")](https://travis-ci.org/alexanderbez/godash)
+[![Build Status](https://travis-ci.org/alexanderbez/godash.svg?branch=master)](https://travis-ci.org/alexanderbez/godash)
 [![GoDoc](https://godoc.org/github.com/alexanderbez/godash?status.svg)](https://godoc.org/github.com/alexanderbez/godash)
 
 
@@ -14,38 +14,47 @@ desired types, there are performance implications.
 Slice based operations:
 
 ```go
+import (
+    // ...
+    "github.com/alexanderbez/godash"
+)
 // Filter out unique elements from a slice
 in := []string{"foo", "bar", "baz", "foo"}
 out := []string{}
-Unique(in, &out)
+godash.Unique(in, &out)
 
 // Determine if two slices are equal by their contents
 s1 := []int{1,2,3,4,5}
 s2 := []int{5,4,3,2,1}
-SliceEqual(s1, s2)
+godash.SliceEqual(s1, s2)
 
 // Determine if an element exists in a slice
 s := []string{"foo", "bar", "baz"}
-Includes(s, "baz")
+godash.Includes(s, "baz")
 
 // Append to a slice only if the slice does not already contain the elements
 in := []string{"foo", "bar", "baz", "foo"}
-AppendUniq(&in, "foo", "hello", "world")
+godash.AppendUniq(&in, "foo", "hello", "world")
 ```
 
 Encoding based operations:
 
 ```go
+import (
+    // ...
+    "github.com/alexanderbez/godash"
+)
+
 type Person struct {
     Name string `json:"name"`
 }
 s := Person{Name: "John Doe"}
 
 // Encode to pretty JSON (4 space indent)
-pBytes, err := ToPrettyJSON(s)
+pBytes, err := godash.ToPrettyJSON(s)
 
 // Encode to JSON with no indentation (minified)
-bytes, err := ToJSON(s)
+bytes, err := godash.ToJSON(s)
 ```
 
 Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API documentation as new functions are implemented.
