@@ -63,6 +63,25 @@ func TestUnique(t *testing.T) {
 	}
 }
 
+func benchmarkUnique(i int, b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		// Fib(i)
+	}
+}
+func benchmarkUniqueTyped(i int, b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		// Fib(i)
+	}
+}
+
+func BenchmarkUniqueInt50(b *testing.B)   { benchmarkUnique(50, b) }
+func BenchmarkUniqueInt500(b *testing.B)  { benchmarkUnique(500, b) }
+func BenchmarkUniqueInt1000(b *testing.B) { benchmarkUnique(1000, b) }
+
+func BenchmarkUniqueIntTyped50(b *testing.B)   { benchmarkUniqueTyped(50, b) }
+func BenchmarkUniqueIntTyped500(b *testing.B)  { benchmarkUniqueTyped(500, b) }
+func BenchmarkUniqueIntTyped1000(b *testing.B) { benchmarkUniqueTyped(1000, b) }
+
 func TestSliceEqual(t *testing.T) {
 	s1 := []string{"a", "b", "c"}
 	s2 := []string{"c", "b", "a"}
