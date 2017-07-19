@@ -18,23 +18,24 @@ import (
     // ...
     "github.com/alexanderbez/godash"
 )
+
 // Filter out unique elements from a slice
 in := []string{"foo", "bar", "baz", "foo"}
 out := []string{}
-godash.Unique(in, &out)
+err := godash.Unique(in, &out)
 
 // Determine if two slices are equal by their contents
 s1 := []int{1,2,3,4,5}
 s2 := []int{5,4,3,2,1}
-godash.SliceEqual(s1, s2)
+ok, err := godash.SliceEqual(s1, s2)
 
 // Determine if an element exists in a slice
 s := []string{"foo", "bar", "baz"}
-godash.Includes(s, "baz")
+ok, err := godash.Includes(s, "baz")
 
 // Append to a slice only if the slice does not already contain the elements
 in := []string{"foo", "bar", "baz", "foo"}
-godash.AppendUniq(&in, "foo", "hello", "world")
+err := godash.AppendUniq(&in, "foo", "hello", "world")
 ```
 
 Encoding based operations:
@@ -46,15 +47,15 @@ import (
 )
 
 type Person struct {
-    Name string `json:"name"`
+	Name string `json:"name"`
 }
-s := Person{Name: "John Doe"}
+p := Person{Name: "John Doe"}
 
 // Encode to pretty JSON (4 space indent)
-pBytes, err := godash.ToPrettyJSON(s)
+pBytes, err := godash.ToPrettyJSON(p)
 
 // Encode to JSON with no indentation (minified)
-bytes, err := godash.ToJSON(s)
+bytes, err := godash.ToJSON(p)
 ```
 
 Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API documentation as new functions are implemented.
@@ -71,13 +72,15 @@ Coming soon...
 
 ## TODO:
 
-- Benchmark tests
-- More utility functions
+* Benchmark tests
+* Additional utility functions
+    * Union
+    * Is* functions
 
 ## Contributing
 
 1. [Fork it](https://github.com/alexanderbez/godash/fork)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
+2. Create your feature branch (`git checkout -b feature/my-new-feature`)
+3. Commit your changes (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/my-new-feature`)
 5. Create a new Pull Request
