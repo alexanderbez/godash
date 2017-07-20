@@ -5,9 +5,9 @@
 
 
 A collection of handy utility functions for Golang with no external dependencies!
-Most of the magic is done via Go's `reflect` package. While this does allow you to
-get around having to implement the same functions with different signatures to handle
-desired types, there are performance implications.
+Most of the magic is done via Go's `reflect` package allowing you to get around
+having to implement the same functions with different signatures to handle
+desired types.
 
 ## API
 
