@@ -1,8 +1,10 @@
 package godash
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestIsPointer(t *testing.T) {
@@ -63,24 +65,49 @@ func TestUnique(t *testing.T) {
 	}
 }
 
-func benchmarkUnique(i int, b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		// Fib(i)
+func benchmarkUnique(n int, b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	in := make([]int, n, n)
+	for i := 0; i < n; i++ {
+		in[i] = rand.Intn(100)
 	}
-}
-func benchmarkUniqueTyped(i int, b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		// Fib(i)
+	for i := 0; i < b.N; i++ {
+		out := []string{}
+		Unique(in, &out)
 	}
 }
 
-func BenchmarkUniqueInt50(b *testing.B)   { benchmarkUnique(50, b) }
-func BenchmarkUniqueInt500(b *testing.B)  { benchmarkUnique(500, b) }
+func benchmarkUniqueTyped(n int, b *testing.B) {
+	rand.Seed(time.Now().Unix())
+	in := make([]int, n, n)
+	for i := 0; i < n; i++ {
+		in[i] = rand.Intn(100)
+	}
+
+	fn := func(list []int) []int {
+		out := []int{}
+		check := make(map[int]struct{})
+		for _, el := range list {
+			check[el] = struct{}{}
+		}
+		for k := range check {
+			out = append(out, k)
+		}
+		return out
+	}
+
+	for i := 0; i < b.N; i++ {
+		fn(in)
+	}
+}
+
+func BenchmarkUniqueInt100(b *testing.B)  { benchmarkUnique(100, b) }
 func BenchmarkUniqueInt1000(b *testing.B) { benchmarkUnique(1000, b) }
+func BenchmarkUniqueInt5000(b *testing.B) { benchmarkUnique(5000, b) }
 
-func BenchmarkUniqueIntTyped50(b *testing.B)   { benchmarkUniqueTyped(50, b) }
-func BenchmarkUniqueIntTyped500(b *testing.B)  { benchmarkUniqueTyped(500, b) }
+func BenchmarkUniqueIntTyped100(b *testing.B)  { benchmarkUniqueTyped(100, b) }
 func BenchmarkUniqueIntTyped1000(b *testing.B) { benchmarkUniqueTyped(1000, b) }
+func BenchmarkUniqueIntTyped5000(b *testing.B) { benchmarkUniqueTyped(5000, b) }
 
 func TestSliceEqual(t *testing.T) {
 	s1 := []string{"a", "b", "c"}
