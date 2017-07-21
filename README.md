@@ -66,13 +66,8 @@ Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API 
 $ make test
 ```
 
-## Benchmarks
-
-Coming soon...
-
 ## TODO:
 
-* Benchmark tests
 * Additional utility functions
     * Union
     * Is* functions
