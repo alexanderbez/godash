@@ -18,23 +18,28 @@ type (
 	Pointer interface{}
 )
 
-// IsPointer returns true if the supplied argument is a pointer and false
+// IsPointer returns true if the specified argument is a pointer and false
 // otherwise.
 func IsPointer(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Ptr
 }
 
-// IsFunction returns true if the supplied argument is a function and false
+// IsFunction returns true if the specified argument is a function and false
 // otherwise.
 func IsFunction(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Func
 }
 
-// IsSlice returns true if the supplied argument is a slice or array and false
+// IsSlice returns true if the specified argument is a slice or array and false
 // otherwise.
 func IsSlice(value Value) bool {
 	kind := reflect.ValueOf(value).Kind()
 	return kind == reflect.Slice || kind == reflect.Array
+}
+
+// IsMap returns true if the specified argument is a map and false otherwise.
+func IsMap(Value Value) bool {
+	return reflect.ValueOf(Value).Kind() == reflect.Map
 }
 
 // Unique returns a unique collection of elements found in inSlice. The
@@ -209,4 +214,8 @@ func ToPrettyJSON(value Value) (r []byte, err error) {
 func ToJSON(value Value) (r []byte, err error) {
 	r, err = json.Marshal(value)
 	return
+}
+
+func Keys() {
+
 }

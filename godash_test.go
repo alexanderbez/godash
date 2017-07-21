@@ -41,6 +41,22 @@ func TestIsSlice(t *testing.T) {
 	}
 }
 
+func TestIsMap(t *testing.T) {
+	x := make(map[string]interface{})
+	y := 4
+	z := make([]string, 0)
+
+	if r := IsMap(x); !r {
+		t.Errorf("expected 'true' (got %v)", r)
+	}
+	if r := IsMap(y); r {
+		t.Errorf("expected 'false' (got %v)", r)
+	}
+	if r := IsMap(z); r {
+		t.Errorf("expected 'false' (got %v)", r)
+	}
+}
+
 func TestUnique(t *testing.T) {
 	in := []string{"a", "a", "c", "d", "c"}
 	out := []string{}
