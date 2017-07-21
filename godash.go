@@ -16,6 +16,8 @@ type (
 	Slice interface{}
 	// Pointer reflects a pointer that references any type
 	Pointer interface{}
+	// Map reflects a map of any type
+	Map interface{}
 )
 
 // IsPointer returns true if the specified argument is a pointer and false
@@ -216,6 +218,36 @@ func ToJSON(value Value) (r []byte, err error) {
 	return
 }
 
-func Keys() {
+// Keys appends all of the keys in the provided map inMap to the outPtr
+// pointer. An error is returned if the argument inMap is not a valid map or if
+// outPtr is not a slice of the same type as the key type in inMap.
+func Keys(inMap Map, outPtr Slice) error {
+	if !IsMap(inMap) {
+		return fmt.Errorf("argument type '%T' is not a map", inMap)
+	}
 
+	inMapVal := reflect.ValueOf(inMap)
+	inMapTyp := inMapVal.Type()
+
+	outValue := reflect.ValueOf(outPtr)
+	outType := outValue.Type()
+
+	if !outType.Elem().AssignableTo(inMapTyp.Key()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", outType.Elem(), inMapTyp.Key())
+	}
+
+	keysLen := inMapVal.Len()
+	outSlice := reflect.MakeSlice(inMapTyp.Key(), keysLen, keysLen)
+
+	for i := 0; i < Keys {
+		outSlice = reflect.Append(outSlice, reflect.ValueOf(k))
+	}
+
+	// TODO
+	outValue.Elem().Set(outSlice)
+	return nil
 }
+
+// func Values(inMap Map, outPtr Slice) error {
+
+// }

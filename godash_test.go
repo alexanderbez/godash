@@ -162,3 +162,7 @@ func TestAppendUniq(t *testing.T) {
 		t.Errorf("expected correct slice (got %v)", s2)
 	}
 }
+
+func TestKeys(t *testing.T) {
+
+}
