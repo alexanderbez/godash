@@ -62,7 +62,7 @@ func Unique(inSlice Slice, outPtr Pointer) error {
 	outValue := reflect.ValueOf(outPtr)
 	outType := outValue.Type()
 
-	if !inSliceTyp.AssignableTo(outValue.Type().Elem()) {
+	if !inSliceTyp.AssignableTo(outType.Elem()) {
 		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", inSliceTyp, outType.Elem())
 	}
 
