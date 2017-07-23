@@ -218,33 +218,40 @@ func ToJSON(value Value) (r []byte, err error) {
 	return
 }
 
-// Keys appends all of the keys in the provided map inMap to the outPtr
+// MapKeys appends all of the keys in the provided map inMap to the outPtr
 // pointer. An error is returned if the argument inMap is not a valid map or if
 // outPtr is not a slice of the same type as the key type in inMap.
-func Keys(inMap Map, outPtr Slice) error {
+func MapKeys(inMap Map, outPtr Slice) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
+	} else if !IsPointer(outPtr) {
+		return fmt.Errorf("argument type '%T' is not a pointer", outPtr)
 	}
 
 	inMapVal := reflect.ValueOf(inMap)
 	inMapTyp := inMapVal.Type()
 
 	outValue := reflect.ValueOf(outPtr)
-	outType := outValue.Type()
+	outTypeEl := outValue.Type().Elem()
 
-	if !outType.Elem().AssignableTo(inMapTyp.Key()) {
-		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", outType.Elem(), inMapTyp.Key())
+	if !IsSlice(outValue.Elem().Interface()) {
+		return fmt.Errorf("argument type '%T' is not a pointer to a slice", outValue.Elem().Interface())
 	}
 
-	keysLen := inMapVal.Len()
-	outSlice := reflect.MakeSlice(inMapTyp.Key(), keysLen, keysLen)
-
-	for i := 0; i < Keys {
-		outSlice = reflect.Append(outSlice, reflect.ValueOf(k))
+	if !outTypeEl.Elem().AssignableTo(inMapTyp.Key()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", outTypeEl.Elem(), inMapTyp.Key())
 	}
 
-	// TODO
+	// Copy keys from map to a temporary slice outSlice
+	outSlice := reflect.MakeSlice(outTypeEl, 0, 0)
+	for _, key := range inMapVal.MapKeys() {
+		outSlice = reflect.Append(outSlice, key)
+	}
+
+	// Assign slice of keys from outSlice to the output slice pointer contained
+	// in outValue.
 	outValue.Elem().Set(outSlice)
+
 	return nil
 }
 
