@@ -243,19 +243,54 @@ func MapKeys(inMap Map, outPtr Slice) error {
 		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", outTypeEl.Elem(), inMapTyp.Key())
 	}
 
-	// Copy keys from map to a temporary slice outSlice
+	// Copy keys from map to a temporary slice referenced by outSlice
 	outSlice := reflect.MakeSlice(outTypeEl, 0, 0)
 	for _, key := range inMapVal.MapKeys() {
 		outSlice = reflect.Append(outSlice, key)
 	}
 
-	// Assign slice of keys from outSlice to the output slice pointer contained
-	// in outValue.
+	// Set the value of outValue to the pointer referenced by the temporary
+	// slice referenced by outSlice (copying the contents).
 	outValue.Elem().Set(outSlice)
 
 	return nil
 }
 
-// func Values(inMap Map, outPtr Slice) error {
+// MapValues appends all of the values in the provided map, inMap, to the slice
+// referenced by the pointer outPtr. An error is returned if the argument inMap
+// is not a valid map or if outPtr is not a slice of the same type as the value
+// type in inMap.
+func MapValues(inMap Map, outPtr Slice) error {
+	if !IsMap(inMap) {
+		return fmt.Errorf("argument type '%T' is not a map", inMap)
+	} else if !IsPointer(outPtr) {
+		return fmt.Errorf("argument type '%T' is not a pointer", outPtr)
+	}
 
-// }
+	inMapVal := reflect.ValueOf(inMap)
+	inMapTyp := inMapVal.Type()
+	inMapValType := inMapTyp.Elem()
+
+	outValue := reflect.ValueOf(outPtr)
+	outTypeEl := outValue.Type().Elem()
+
+	if !IsSlice(outValue.Elem().Interface()) {
+		return fmt.Errorf("argument type '%T' is not a pointer to a slice", outValue.Elem().Interface())
+	}
+
+	if !inMapValType.AssignableTo(outTypeEl.Elem()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", inMapValType, outTypeEl.Elem())
+	}
+
+	// Copy values from map to a temporary slice referenced by outSlice
+	outSlice := reflect.MakeSlice(outTypeEl, 0, 0)
+	for _, key := range inMapVal.MapKeys() {
+		outSlice = reflect.Append(outSlice, inMapVal.MapIndex(key))
+	}
+
+	// Set the value of outValue to the pointer referenced by the temporary
+	// slice referenced by outSlice (copying the contents).
+	outValue.Elem().Set(outSlice)
+
+	return nil
+}
