@@ -16,25 +16,32 @@ type (
 	Slice interface{}
 	// Pointer reflects a pointer that references any type
 	Pointer interface{}
+	// Map reflects a map of any type
+	Map interface{}
 )
 
-// IsPointer returns true if the supplied argument is a pointer and false
+// IsPointer returns true if the specified argument is a pointer and false
 // otherwise.
 func IsPointer(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Ptr
 }
 
-// IsFunction returns true if the supplied argument is a function and false
+// IsFunction returns true if the specified argument is a function and false
 // otherwise.
 func IsFunction(value Value) bool {
 	return reflect.ValueOf(value).Kind() == reflect.Func
 }
 
-// IsSlice returns true if the supplied argument is a slice or array and false
+// IsSlice returns true if the specified argument is a slice or array and false
 // otherwise.
 func IsSlice(value Value) bool {
 	kind := reflect.ValueOf(value).Kind()
 	return kind == reflect.Slice || kind == reflect.Array
+}
+
+// IsMap returns true if the specified argument is a map and false otherwise.
+func IsMap(Value Value) bool {
+	return reflect.ValueOf(Value).Kind() == reflect.Map
 }
 
 // Unique returns a unique collection of elements found in inSlice. The
@@ -55,7 +62,7 @@ func Unique(inSlice Slice, outPtr Pointer) error {
 	outValue := reflect.ValueOf(outPtr)
 	outType := outValue.Type()
 
-	if !inSliceTyp.AssignableTo(outValue.Type().Elem()) {
+	if !inSliceTyp.AssignableTo(outType.Elem()) {
 		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", inSliceTyp, outType.Elem())
 	}
 
@@ -209,4 +216,81 @@ func ToPrettyJSON(value Value) (r []byte, err error) {
 func ToJSON(value Value) (r []byte, err error) {
 	r, err = json.Marshal(value)
 	return
+}
+
+// MapKeys appends all of the keys in the provided map, inMap, to the slice
+// referenced by the pointer outPtr. An error is returned if the argument inMap
+// is not a valid map or if outPtr is not a slice of the same type as the key
+// type in inMap.
+func MapKeys(inMap Map, outPtr Slice) error {
+	if !IsMap(inMap) {
+		return fmt.Errorf("argument type '%T' is not a map", inMap)
+	} else if !IsPointer(outPtr) {
+		return fmt.Errorf("argument type '%T' is not a pointer", outPtr)
+	}
+
+	inMapVal := reflect.ValueOf(inMap)
+	inMapTyp := inMapVal.Type()
+
+	outValue := reflect.ValueOf(outPtr)
+	outTypeEl := outValue.Type().Elem()
+
+	if !IsSlice(outValue.Elem().Interface()) {
+		return fmt.Errorf("argument type '%T' is not a pointer to a slice", outValue.Elem().Interface())
+	}
+
+	if !outTypeEl.Elem().AssignableTo(inMapTyp.Key()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", outTypeEl.Elem(), inMapTyp.Key())
+	}
+
+	// Copy keys from map to a temporary slice referenced by outSlice
+	outSlice := reflect.MakeSlice(outTypeEl, 0, 0)
+	for _, key := range inMapVal.MapKeys() {
+		outSlice = reflect.Append(outSlice, key)
+	}
+
+	// Set the value of outValue to the pointer referenced by the temporary
+	// slice referenced by outSlice (copying the contents).
+	outValue.Elem().Set(outSlice)
+
+	return nil
+}
+
+// MapValues appends all of the values in the provided map, inMap, to the slice
+// referenced by the pointer outPtr. An error is returned if the argument inMap
+// is not a valid map or if outPtr is not a slice of the same type as the value
+// type in inMap.
+func MapValues(inMap Map, outPtr Slice) error {
+	if !IsMap(inMap) {
+		return fmt.Errorf("argument type '%T' is not a map", inMap)
+	} else if !IsPointer(outPtr) {
+		return fmt.Errorf("argument type '%T' is not a pointer", outPtr)
+	}
+
+	inMapVal := reflect.ValueOf(inMap)
+	inMapTyp := inMapVal.Type()
+	inMapValType := inMapTyp.Elem()
+
+	outValue := reflect.ValueOf(outPtr)
+	outTypeEl := outValue.Type().Elem()
+
+	if !IsSlice(outValue.Elem().Interface()) {
+		return fmt.Errorf("argument type '%T' is not a pointer to a slice", outValue.Elem().Interface())
+	}
+
+	if !inMapValType.AssignableTo(outTypeEl.Elem()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v' ", inMapValType, outTypeEl.Elem())
+	}
+
+	// Copy values from map to a temporary slice referenced by outSlice
+	outSlice := reflect.MakeSlice(outTypeEl, 0, 0)
+	for _, key := range inMapVal.MapKeys() {
+		outSlice = reflect.Append(outSlice, inMapVal.MapIndex(key))
+	}
+
+	// Set the value of outValue to the pointer referenced by the temporary
+	// slice referenced by outSlice (copying the contents).
+	outValue.Elem().Set(outSlice)
+
+	return nil
 }
