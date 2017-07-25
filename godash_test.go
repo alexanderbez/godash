@@ -164,34 +164,82 @@ func TestAppendUniq(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	x := map[string]interface{}{"a": 3, "b": false}
+	m := map[string]interface{}{"a": 3, "b": false}
 	a := []int{}
 	b := 3
 	c := []string{}
 
 	// Test argument types
-	if err := MapKeys(&x, a); err == nil {
+	if err := MapKeys(&m, a); err == nil {
+		// Test the input variable is a map
 		t.Errorf("expected an error (got %v)", err)
 	}
 	if err := MapKeys(a, a); err == nil {
+		// Test the input variable is a map
 		t.Errorf("expected an error (got %v)", err)
 	}
-	if err := MapKeys(x, a); err == nil {
+	if err := MapKeys(m, a); err == nil {
+		// Test the output variable is a pointer
 		t.Errorf("expected an error (got %v)", err)
 	}
-	if err := MapKeys(x, &a); err == nil {
+	if err := MapKeys(m, &a); err == nil {
+		// Test the output variable is a pointer of the valid type
 		t.Errorf("expected an error (got %v)", err)
 	}
-	if err := MapKeys(x, b); err == nil {
+	if err := MapKeys(m, b); err == nil {
+		// Test the output variable is a pointer
 		t.Errorf("expected an error (got %v)", err)
 	}
-	if err := MapKeys(x, &b); err == nil {
+	if err := MapKeys(m, &b); err == nil {
+		// Test the output variable is a pointer
 		t.Errorf("expected an error (got %v)", err)
 	}
 
 	// Test correct functionality
 	expected := []string{"a", "b"}
-	if err := MapKeys(x, &c); err != nil {
+	if err := MapKeys(m, &c); err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(c, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, c)
+	}
+}
+
+func TestMapValues(t *testing.T) {
+	m := map[string]int{"foo": 3, "bar": 6}
+	a := []string{}
+	b := 3
+	c := []int{}
+
+	// Test argument types
+	if err := MapValues(&m, a); err == nil {
+		// Test the input variable is a map
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := MapValues(a, a); err == nil {
+		// Test the input variable is a map
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := MapValues(m, a); err == nil {
+		// Test the output variable is a pointer
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := MapValues(m, &a); err == nil {
+		// Test the output variable is a pointer of the valid type
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := MapValues(m, b); err == nil {
+		// Test the output variable is a pointer
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := MapValues(m, &b); err == nil {
+		// Test the output variable is a pointer
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test correct functionality
+	expected := []int{3, 6}
+	if err := MapValues(m, &c); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
 	if ok := reflect.DeepEqual(c, expected); !ok {
