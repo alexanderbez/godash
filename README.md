@@ -14,51 +14,75 @@ desired types.
 Slice based operations:
 
 ```go
-import (
-    // ...
-    "github.com/alexanderbez/godash"
-)
-
 // Filter out unique elements from a slice
 in := []string{"foo", "bar", "baz", "foo"}
 out := []string{}
 err := godash.Unique(in, &out)
+// out == ["foo", "bar", "baz"]
+```
 
+```go
 // Determine if two slices are equal by their contents
 s1 := []int{1,2,3,4,5}
 s2 := []int{5,4,3,2,1}
 ok, err := godash.SliceEqual(s1, s2)
+// ok, err == <true, nil>
+```
 
+```go
 // Determine if an element exists in a slice
 s := []string{"foo", "bar", "baz"}
 ok, err := godash.Includes(s, "baz")
+// ok, err == <true, nil>
+```
 
+```go
 // Append to a slice only if the slice does not already contain the elements
 in := []string{"foo", "bar", "baz", "foo"}
 err := godash.AppendUniq(&in, "foo", "hello", "world")
+// in == ["foo", "bar", "baz", "foo", "hello", "world"]
 ```
 
 Encoding based operations:
 
 ```go
-import (
-    // ...
-    "github.com/alexanderbez/godash"
-)
-
 type Person struct {
 	Name string `json:"name"`
 }
+
 p := Person{Name: "John Doe"}
+```
 
+```go
 // Encode to pretty JSON (4 space indent)
-pBytes, err := godash.ToPrettyJSON(p)
+bytes, err := godash.ToPrettyJSON(p)
+```
 
+```go
 // Encode to JSON with no indentation (minified)
 bytes, err := godash.ToJSON(p)
 ```
 
-Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API documentation as new functions are implemented.
+Map based operations:
+
+```go
+// Get all the keys in a map
+m := map[string]int{"foo": 3, "bar": 6}
+o := []string{}
+err := MapKeys(m, &o)
+// o == ["key", "bar"]
+```
+
+```go
+// Get all the values in a map
+m := map[string]int{"foo": 3, "bar": 6}
+o := []int{}
+err := MapKeys(m, &o)
+// o == [3, 6]
+```
+
+Visit [godoc](https://godoc.org/github.com/alexanderbez/godash) for further API
+documentation as new functions are implemented.
 
 ## Tests
 
