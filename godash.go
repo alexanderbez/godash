@@ -218,9 +218,10 @@ func ToJSON(value Value) (r []byte, err error) {
 	return
 }
 
-// MapKeys appends all of the keys in the provided map inMap to the outPtr
-// pointer. An error is returned if the argument inMap is not a valid map or if
-// outPtr is not a slice of the same type as the key type in inMap.
+// MapKeys appends all of the keys in the provided map, inMap, to the slice
+// referenced by the pointer outPtr. An error is returned if the argument inMap
+// is not a valid map or if outPtr is not a slice of the same type as the key
+// type in inMap.
 func MapKeys(inMap Map, outPtr Slice) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
