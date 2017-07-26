@@ -77,7 +77,7 @@ err := MapKeys(m, &o)
 // Get all the values in a map
 m := map[string]int{"foo": 3, "bar": 6}
 o := []int{}
-err := MapKeys(m, &o)
+err := MapValues(m, &o)
 // o == [3, 6]
 ```
 
@@ -94,6 +94,7 @@ $ make test
 
 * Additional utility functions
     * Union
+    * Working with Hex/Bytes
     * Is* functions
 
 ## Contributing
