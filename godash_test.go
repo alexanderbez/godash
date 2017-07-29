@@ -2,6 +2,7 @@ package godash
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -155,10 +156,16 @@ func TestAppendUniq(t *testing.T) {
 
 	// Test correct functionality
 	s2 := []string{"a", "b", "c"}
+	expected := []string{"a", "b", "c", "d"}
+
 	if err := AppendUniq(&s2, "a", "d", "a", "d"); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
-	if r := reflect.DeepEqual(s2, []string{"a", "b", "c", "d"}); !r {
+
+	sort.Strings(s2)
+	sort.Strings(expected)
+
+	if r := reflect.DeepEqual(s2, expected); !r {
 		t.Errorf("expected correct slice (got %v)", s2)
 	}
 }
@@ -197,9 +204,14 @@ func TestKeys(t *testing.T) {
 
 	// Test correct functionality
 	expected := []string{"a", "b"}
+
 	if err := MapKeys(m, &c); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
+
+	sort.Strings(expected)
+	sort.Strings(c)
+
 	if ok := reflect.DeepEqual(c, expected); !ok {
 		t.Errorf("expected (%v) (got %v)", expected, c)
 	}
@@ -239,9 +251,14 @@ func TestMapValues(t *testing.T) {
 
 	// Test correct functionality
 	expected := []int{3, 6}
+
 	if err := MapValues(m, &c); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
+
+	sort.Ints(expected)
+	sort.Ints(c)
+
 	if ok := reflect.DeepEqual(c, expected); !ok {
 		t.Errorf("expected (%v) (got %v)", expected, c)
 	}
