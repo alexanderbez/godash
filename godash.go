@@ -87,7 +87,7 @@ func Unique(inSlice Slice, outPtr Pointer) error {
 // the other. If either parameter is not a slice or the types do not match, an
 // error is returned. Operation runs in O(n^2) time, where n is the total
 // number of elements found in either slice.
-func SliceEqual(slice1 Slice, slice2 Slice) (bool, error) {
+func SliceEqual(slice1, slice2 Slice) (bool, error) {
 	if !IsSlice(slice1) {
 		return false, fmt.Errorf("argument type '%T' is not a slice", slice1)
 	} else if !IsSlice(slice2) {
@@ -220,9 +220,9 @@ func ToJSON(value Value) (r []byte, err error) {
 
 // MapKeys appends all of the keys in the provided map, inMap, to the slice
 // referenced by the pointer outPtr. An error is returned if the argument inMap
-// is not a valid map or if outPtr is not a slice of the same type as the key
-// type in inMap.
-func MapKeys(inMap Map, outPtr Slice) error {
+// is not a valid map or if the slice that outPtr references is not a slice of
+// the same type as the key type in inMap.
+func MapKeys(inMap Map, outPtr Pointer) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
 	} else if !IsPointer(outPtr) {
@@ -258,9 +258,9 @@ func MapKeys(inMap Map, outPtr Slice) error {
 
 // MapValues appends all of the values in the provided map, inMap, to the slice
 // referenced by the pointer outPtr. An error is returned if the argument inMap
-// is not a valid map or if outPtr is not a slice of the same type as the value
-// type in inMap.
-func MapValues(inMap Map, outPtr Slice) error {
+// is not a valid map or if the slice that outPtr references is not a slice of
+// the same type as the value type in inMap.
+func MapValues(inMap Map, outPtr Pointer) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
 	} else if !IsPointer(outPtr) {
