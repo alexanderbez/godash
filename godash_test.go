@@ -263,3 +263,96 @@ func TestMapValues(t *testing.T) {
 		t.Errorf("expected (%v) (got %v)", expected, c)
 	}
 }
+
+func TestIntersect(t *testing.T) {
+	s1 := []int{1, 2, 3, 4}
+	s2 := []int{3, 4, 5, 1}
+	s3 := []int{7, 8, 9, 0}
+	s4 := []int{3, 4, 4, 3}
+	x := 3
+	y := []string{}
+	out := []int{}
+
+	// Validity tests
+
+	// Test if the first slice is actually a slice
+	if err := Intersect(x, s2, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the second slice is actually a slice
+	if err := Intersect(s1, x, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output argument is a pointer
+	if err := Intersect(x, s2, out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output argument is a pointer to a slice
+	if err := Intersect(s1, s2, &x); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the two slices are of the same type
+	if err := Intersect(s1, y, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := Intersect(y, s2, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output slice reference is of the same type
+	if err := Intersect(s1, s2, &y); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Functionality tests
+	var (
+		expected []int
+		err      error
+	)
+
+	// Test when there is an intersection
+	out = []int{}
+	expected = []int{3, 4, 1}
+	err = Intersect(s1, s2, &out)
+
+	sort.Ints(expected)
+	sort.Ints(out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
+	}
+
+	// Test when there is no intersection
+	out = []int{}
+	expected = []int{}
+	err = Intersect(s1, s3, &out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
+	}
+
+	// Test intersection with duplicates
+	out = []int{}
+	expected = []int{3, 4}
+	err = Intersect(s1, s4, &out)
+
+	sort.Ints(expected)
+	sort.Ints(out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
+	}
+}
