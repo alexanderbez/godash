@@ -90,13 +90,6 @@ documentation as new functions are implemented.
 $ make test
 ```
 
-## TODO:
-
-* Additional utility functions
-    * Union
-    * Working with Hex/Bytes
-    * Is* functions
-
 ## Contributing
 
 1. [Fork it](https://github.com/alexanderbez/godash/fork)
