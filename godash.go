@@ -87,7 +87,7 @@ func Unique(inSlice Slice, outPtr Pointer) error {
 // the other. If either parameter is not a slice or the types do not match, an
 // error is returned. Operation runs in O(n^2) time, where n is the total
 // number of elements found in either slice.
-func SliceEqual(slice1 Slice, slice2 Slice) (bool, error) {
+func SliceEqual(slice1, slice2 Slice) (bool, error) {
 	if !IsSlice(slice1) {
 		return false, fmt.Errorf("argument type '%T' is not a slice", slice1)
 	} else if !IsSlice(slice2) {
@@ -220,9 +220,9 @@ func ToJSON(value Value) (r []byte, err error) {
 
 // MapKeys appends all of the keys in the provided map, inMap, to the slice
 // referenced by the pointer outPtr. An error is returned if the argument inMap
-// is not a valid map or if outPtr is not a slice of the same type as the key
-// type in inMap.
-func MapKeys(inMap Map, outPtr Slice) error {
+// is not a valid map or if the slice that outPtr references is not a slice of
+// the same type as the key type in inMap.
+func MapKeys(inMap Map, outPtr Pointer) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
 	} else if !IsPointer(outPtr) {
@@ -258,9 +258,9 @@ func MapKeys(inMap Map, outPtr Slice) error {
 
 // MapValues appends all of the values in the provided map, inMap, to the slice
 // referenced by the pointer outPtr. An error is returned if the argument inMap
-// is not a valid map or if outPtr is not a slice of the same type as the value
-// type in inMap.
-func MapValues(inMap Map, outPtr Slice) error {
+// is not a valid map or if the slice that outPtr references is not a slice of
+// the same type as the value type in inMap.
+func MapValues(inMap Map, outPtr Pointer) error {
 	if !IsMap(inMap) {
 		return fmt.Errorf("argument type '%T' is not a map", inMap)
 	} else if !IsPointer(outPtr) {
@@ -291,6 +291,77 @@ func MapValues(inMap Map, outPtr Slice) error {
 	// Set the value of outValue to the pointer referenced by the temporary
 	// slice referenced by outSlice (copying the contents).
 	outValue.Elem().Set(outSlice)
+
+	return nil
+}
+
+// Intersect appends all the common distinct elements found in slice1 and
+// slice2 to the slice referenced by outPtr. An error is returned if any of the
+// following conditions are met, slice1 or slice2 are not slices, they are not
+// slices of the same type, or the value referenced by outPtr is not a slice,
+// or a slice of the same type as slice1 and slice2.
+func Intersect(slice1, slice2 Slice, outPtr Pointer) error {
+	if !IsSlice(slice1) {
+		return fmt.Errorf("argument type '%T' is not a slice", slice1)
+	} else if !IsSlice(slice2) {
+		return fmt.Errorf("argument type '%T' is not a slice", slice2)
+	} else if !IsPointer(outPtr) {
+		return fmt.Errorf("argument type '%T' is not a pointer", outPtr)
+	}
+
+	slice1Val := reflect.ValueOf(slice1)
+	slice1Type := slice1Val.Type()
+
+	slice2Val := reflect.ValueOf(slice2)
+	slice2Type := slice2Val.Type()
+
+	if !slice1Type.AssignableTo(slice2Type) {
+		return fmt.Errorf("incompatible slice types '%v' and '%v'", slice1Type, slice2Type)
+	}
+
+	outPtrValue := reflect.ValueOf(outPtr)
+	outPtrType := outPtrValue.Type()
+
+	if !slice1Type.AssignableTo(outPtrType.Elem()) {
+		return fmt.Errorf("input type '%v' can't be assigned to output type '%v'", slice1Type, outPtrType.Elem())
+	}
+
+	var (
+		len         int
+		iterSlice   reflect.Value
+		searchSlice Slice
+	)
+
+	// Determine which slice to iterate over and which slice to search through
+	if slice1Val.Len() < slice2Val.Len() {
+		len = slice1Val.Len()
+		iterSlice = slice1Val
+		searchSlice = slice2
+	} else {
+		len = slice2Val.Len()
+		iterSlice = slice2Val
+		searchSlice = slice1
+	}
+
+	distinct := map[interface{}]bool{}
+
+	// Iterate over iterSlice and only append the current element to outSlice
+	// if it exists in searchSlice.
+	outSlice := reflect.MakeSlice(slice1Type, 0, 0)
+	for i := 0; i < len; i++ {
+		intrVal := iterSlice.Index(i).Interface()
+
+		if ok, _ := Includes(searchSlice, intrVal); ok {
+			if _, ok = distinct[intrVal]; !ok {
+				outSlice = reflect.Append(outSlice, reflect.ValueOf(intrVal))
+			}
+
+			distinct[intrVal] = true
+		}
+	}
+
+	// Assign the new unique list to the provided output slice pointer
+	outPtrValue.Elem().Set(outSlice)
 
 	return nil
 }

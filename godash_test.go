@@ -2,6 +2,7 @@ package godash
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -62,7 +63,8 @@ func TestUnique(t *testing.T) {
 	out := []string{}
 	b1 := []int{}
 
-	// Test argument types
+	// Validity tests
+
 	if err := Unique(in, b1); err == nil {
 		t.Errorf("expected an error (got %v)", err)
 	}
@@ -70,7 +72,8 @@ func TestUnique(t *testing.T) {
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Functionality tests
+
 	if err := Unique(in, &out); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
@@ -86,7 +89,8 @@ func TestSliceEqual(t *testing.T) {
 	s4 := []int{1, 2, 3}
 	x := 0
 
-	// Test argument types
+	// Validity tests
+
 	if _, err := SliceEqual(s1, x); err == nil {
 		t.Errorf("expected an error (got %v)", err)
 	}
@@ -94,7 +98,8 @@ func TestSliceEqual(t *testing.T) {
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Functionality tests
+
 	if r, _ := SliceEqual(s1, x); r {
 		t.Errorf("expected 'false' (got %v)", r)
 	}
@@ -118,7 +123,8 @@ func TestSliceEqual(t *testing.T) {
 func TestIncludes(t *testing.T) {
 	s1 := []string{"a", "b", "c"}
 
-	// Test argument types
+	// Validity tests
+
 	if _, err := Includes(s1, 1); err == nil {
 		t.Errorf("expected an error (got %v)", err)
 	}
@@ -126,7 +132,8 @@ func TestIncludes(t *testing.T) {
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Functionality tests
+
 	if r, _ := Includes(s1, "a"); !r {
 		t.Errorf("expected 'true' (got %v)", r)
 	}
@@ -136,9 +143,10 @@ func TestIncludes(t *testing.T) {
 }
 
 func TestAppendUniq(t *testing.T) {
-	// Test argument types
 	x := 1
 	s1 := []string{"a", "b", "c"}
+
+	// Validity tests
 
 	if err := AppendUniq(&x, 1); err == nil {
 		t.Errorf("expected an error (got %v)", err)
@@ -153,12 +161,19 @@ func TestAppendUniq(t *testing.T) {
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Functionality tests
+
 	s2 := []string{"a", "b", "c"}
+	expected := []string{"a", "b", "c", "d"}
+
 	if err := AppendUniq(&s2, "a", "d", "a", "d"); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
-	if r := reflect.DeepEqual(s2, []string{"a", "b", "c", "d"}); !r {
+
+	sort.Strings(s2)
+	sort.Strings(expected)
+
+	if r := reflect.DeepEqual(s2, expected); !r {
 		t.Errorf("expected correct slice (got %v)", s2)
 	}
 }
@@ -169,37 +184,49 @@ func TestKeys(t *testing.T) {
 	b := 3
 	c := []string{}
 
-	// Test argument types
+	// Validity tests
+
+	// Test the input variable is a map
 	if err := MapKeys(&m, a); err == nil {
-		// Test the input variable is a map
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapKeys(a, a); err == nil {
-		// Test the input variable is a map
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapKeys(m, a); err == nil {
-		// Test the output variable is a pointer
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapKeys(m, &a); err == nil {
-		// Test the output variable is a pointer of the valid type
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapKeys(m, b); err == nil {
-		// Test the output variable is a pointer
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapKeys(m, &b); err == nil {
-		// Test the output variable is a pointer
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Test the input variable is a map
+	if err := MapKeys(a, a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapKeys(m, a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer of the valid type
+	if err := MapKeys(m, &a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapKeys(m, b); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapKeys(m, &b); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Functionality tests
+
 	expected := []string{"a", "b"}
+
 	if err := MapKeys(m, &c); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
+
+	sort.Strings(expected)
+	sort.Strings(c)
+
 	if ok := reflect.DeepEqual(c, expected); !ok {
 		t.Errorf("expected (%v) (got %v)", expected, c)
 	}
@@ -211,38 +238,146 @@ func TestMapValues(t *testing.T) {
 	b := 3
 	c := []int{}
 
-	// Test argument types
+	// Validity tests
+
+	// Test the input variable is a map
 	if err := MapValues(&m, a); err == nil {
-		// Test the input variable is a map
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapValues(a, a); err == nil {
-		// Test the input variable is a map
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapValues(m, a); err == nil {
-		// Test the output variable is a pointer
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapValues(m, &a); err == nil {
-		// Test the output variable is a pointer of the valid type
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapValues(m, b); err == nil {
-		// Test the output variable is a pointer
-		t.Errorf("expected an error (got %v)", err)
-	}
-	if err := MapValues(m, &b); err == nil {
-		// Test the output variable is a pointer
 		t.Errorf("expected an error (got %v)", err)
 	}
 
-	// Test correct functionality
+	// Test the input variable is a map
+	if err := MapValues(a, a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapValues(m, a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer of the valid type
+	if err := MapValues(m, &a); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapValues(m, b); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test the output variable is a pointer
+	if err := MapValues(m, &b); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Functionality tests
+
 	expected := []int{3, 6}
+
+	// Test when no error should be returned
 	if err := MapValues(m, &c); err != nil {
 		t.Errorf("expected nil error (got %v)", err)
 	}
+
+	sort.Ints(expected)
+	sort.Ints(c)
+
+	// Test the correct values were returned
 	if ok := reflect.DeepEqual(c, expected); !ok {
 		t.Errorf("expected (%v) (got %v)", expected, c)
+	}
+}
+
+func TestIntersect(t *testing.T) {
+	s1 := []int{1, 2, 3, 4}
+	s2 := []int{3, 4, 5, 1}
+	s3 := []int{7, 8, 9, 0}
+	s4 := []int{3, 4, 4, 3}
+	x := 3
+	y := []string{}
+	out := []int{}
+
+	// Validity tests
+
+	// Test if the first slice is actually a slice
+	if err := Intersect(x, s2, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the second slice is actually a slice
+	if err := Intersect(s1, x, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output argument is a pointer
+	if err := Intersect(x, s2, out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output argument is a pointer to a slice
+	if err := Intersect(s1, s2, &x); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the two slices are of the same type
+	if err := Intersect(s1, y, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+	if err := Intersect(y, s2, &out); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Test if the output slice reference is of the same type
+	if err := Intersect(s1, s2, &y); err == nil {
+		t.Errorf("expected an error (got %v)", err)
+	}
+
+	// Functionality tests
+
+	var (
+		expected []int
+		err      error
+	)
+
+	// Test when there is an intersection
+	out = []int{}
+	expected = []int{3, 4, 1}
+	err = Intersect(s1, s2, &out)
+
+	sort.Ints(expected)
+	sort.Ints(out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
+	}
+
+	// Test when there is no intersection
+	out = []int{}
+	expected = []int{}
+	err = Intersect(s1, s3, &out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
+	}
+
+	// Test intersection with duplicates
+	out = []int{}
+	expected = []int{3, 4}
+	err = Intersect(s1, s4, &out)
+
+	sort.Ints(expected)
+	sort.Ints(out)
+
+	if err != nil {
+		t.Errorf("expected nil error (got %v)", err)
+	}
+	if ok := reflect.DeepEqual(out, expected); !ok {
+		t.Errorf("expected (%v) (got %v)", expected, out)
 	}
 }

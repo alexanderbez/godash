@@ -77,7 +77,7 @@ err := MapKeys(m, &o)
 // Get all the values in a map
 m := map[string]int{"foo": 3, "bar": 6}
 o := []int{}
-err := MapKeys(m, &o)
+err := MapValues(m, &o)
 // o == [3, 6]
 ```
 
@@ -89,12 +89,6 @@ documentation as new functions are implemented.
 ```shell
 $ make test
 ```
-
-## TODO:
-
-* Additional utility functions
-    * Union
-    * Is* functions
 
 ## Contributing
 
