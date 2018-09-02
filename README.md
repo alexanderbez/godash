@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/alexanderbez/godash.svg?branch=master)](https://travis-ci.org/alexanderbez/godash)
 [![GoDoc](https://godoc.org/github.com/alexanderbez/godash?status.svg)](https://godoc.org/github.com/alexanderbez/godash)
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/alexanderbez/godash)](https://goreportcard.com/report/github.com/alexanderbez/godash)
 
 A collection of handy utility functions for Golang with no external dependencies!
 Most of the magic is done via Go's `reflect` package allowing you to get around
